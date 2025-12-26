@@ -2,7 +2,6 @@
 
 package com.example.localrestapi.viewmodel
 
-import android.annotation.SuppressLint
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -15,7 +14,6 @@ import com.example.localrestapi.uicontroller.route.DestinasiDetail
 import kotlinx.coroutines.launch
 import kotlinx.serialization.InternalSerializationApi
 import retrofit2.HttpException
-import retrofit2.Response
 import java.io.IOException
 
 sealed interface StatusUIDetail {
@@ -38,3 +36,20 @@ class DetailViewModel(
     init {
         getSatuSiswa()
     }
+
+    fun getSatuSiswa() {
+        viewModelScope.launch {
+            statusUIDetail = StatusUIDetail.Loading
+            statusUIDetail = try {
+                StatusUIDetail.Success(
+                    satusiswa = repositoryDataSiswa.getSatuSiswa(idSiswa)
+                )
+            } catch (e: IOException) {
+                StatusUIDetail.Error
+            } catch (e: HttpException) {
+                StatusUIDetail.Error
+            }
+        }
+    }
+
+}
